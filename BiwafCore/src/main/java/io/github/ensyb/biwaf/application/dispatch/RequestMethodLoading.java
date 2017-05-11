@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,18 +19,14 @@ import io.github.ensyb.biwaf.application.dispatch.ActionClass.RequestMethod;
 import io.github.ensyb.biwaf.application.dispatch.response.Response;
 import io.github.ensyb.biwaf.application.injection.scan.ClassPathScann;
 
-@WebListener
 public final class RequestMethodLoading implements ServletContextListener {
 	
 	public Logger LOG = LoggerFactory.getLogger(RequestMethodLoading.class);
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		
 		Map<RequestMethod, ActionClass> commands = new HashMap<>();
-		
 		ClassPathScann scanner = new ClassPathScann((String)sce.getServletContext().getAttribute("basepath"));
-		
 		List<Class<?>> classList = scanner.loadClassesWithAnnotation(Action.class);
 		classList.stream()
 		.forEach(klas -> {

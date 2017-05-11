@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,9 +13,7 @@ import io.github.ensyb.biwaf.application.dispatch.response.BiwafContext;
 import io.github.ensyb.biwaf.application.dispatch.response.Redirect;
 import io.github.ensyb.biwaf.application.dispatch.response.Response;
 
-@WebServlet(urlPatterns="/*", loadOnStartup = 0)
 public final class RequestDispatch extends HttpServlet {
-
 	private static final long serialVersionUID = 7457837972799802365L;
 	private final String CHAR_ENCODING = "UTF-8";
 	
@@ -25,6 +22,7 @@ public final class RequestDispatch extends HttpServlet {
 			throws ServletException, IOException {
 		this.handleRequest(request, response);
 	}
+	
 	private void handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException{
 		RenderView render = new RenderView();

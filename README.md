@@ -14,8 +14,6 @@ public class App {
 				.applicationMain(App.class)
 				.registerErrorPage(new BiwafApplication.Error(404, "/notFound.html"),
 						new BiwafApplication.Error(500, "/error/serverError.html"))
-				.defaultPage("/fujo")
-				.webContentFolderName("WebContent")
 				.port(8080).buildConfiguration();
 		conifg.start();
 	}
@@ -44,12 +42,12 @@ public class TestAction {
 	
 	@Request("/fujo")
 	public Response responseTest(){
-		return new TextResponse("request to fujo brought you here "+ service.getRandomNumber());
+		return new Text("request to fujo brought you here "+ service.getRandomNumber());
 	}
 	
 	@Request("/user/hello")
 	public Response helloResponse(@RequestParam("name") String name) {
-		return new TextResponse("Hello "+ name);
+		return new Text("Hello "+ name);
 	}
 
 
