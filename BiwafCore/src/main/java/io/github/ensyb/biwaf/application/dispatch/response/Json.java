@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.StringJoiner;
 
 public class Json implements Response {
 
@@ -26,21 +27,15 @@ public class Json implements Response {
 
     public Json(Object[] objects, String jsonEncoding) {
         this.jsonEncoding = jsonEncoding;
-        StringBuilder jsonBuilder = new StringBuilder();
-        jsonBuilder.append("[");
-        for (int i = 0; i < objects.length; i++) {
-            Object object = objects[i];
+        StringJoiner joiner = new StringJoiner(",");
+        for (Object object : objects) {
             try {
-                jsonBuilder.append(this.marshalToJson(object));
-                if (i + 1 < objects.length) {
-                    jsonBuilder.append(",");
-                }
+                joiner.add(this.marshalToJson(object));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-        jsonBuilder.append("]");
-        this.jsonContent = jsonBuilder.toString();
+        this.jsonContent = "[" + joiner.toString() + "]";
     }
 
     public Json(Collection<?> objects, String jsonEncoding) {
@@ -61,10 +56,10 @@ public class Json implements Response {
         try {
             HttpServletResponse response = context.currentResponse();
             response.setHeader("Content-Type", "application/json; charset=" + this.jsonEncoding);
-            PrintWriter writter = response.getWriter();
-            writter.write(this.jsonContent);
-            writter.flush();
-            writter.close();
+            PrintWriter writer = response.getWriter();
+            writer.write(this.jsonContent);
+            writer.flush();
+            writer.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,27 +68,14 @@ public class Json implements Response {
 
     private String marshalToJson(Object object) throws IllegalAccessException {
         Field[] fields = object.getClass().getDeclaredFields();
-        StringBuilder jsonBuilder = new StringBuilder();
-        jsonBuilder.append("{");
-        for (int i = 0; i < fields.length; i++) {
-            // Append key
-            Field field = fields[i];
-            jsonBuilder.append("\"").append(field.getName()).append("\"");
-            // Append value
+        StringJoiner joiner = new StringJoiner(",");
+        for (Field field : fields) {
             field.setAccessible(true);
-            jsonBuilder.append(":");
-            if (isQuotedType(field)) {
-                jsonBuilder.append("\"").append(field.get(object).toString()).append("\"");
-            } else {
-                jsonBuilder.append(field.get(object).toString());
-            }
-            if (i + 1 < fields.length) {
-                jsonBuilder.append(",");
-            }
+            String jsonValue = isQuotedType(field) ? "\"" + field.get(object).toString() + "\"" : field.get(object).toString();
+            String jsonKeyValuePair = String.format("\"%s\":%s", field.getName(), jsonValue);
+            joiner.add(jsonKeyValuePair);
         }
-        jsonBuilder.append("}");
-
-        return jsonBuilder.toString();
+        return "{" + joiner.toString() + "}";
     }
 
     private boolean isQuotedType(Field field) {

@@ -23,7 +23,7 @@ public class SomeAction {
 		return new Text("the random number which i am generated is : "+ service.getRandomNumber(150));
 	}
 
-	@Request(value = "/person.html", method=HttpMethod.GET)
+	@Request(value = "/persons.html", method=HttpMethod.GET)
 	public Response personAsJson(){
 		return new Json(Arrays.asList(
 		        new Person(1, "Ensar", 21, false),
